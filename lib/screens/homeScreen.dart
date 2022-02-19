@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ));
               },
               child: Text('add')),
-          TextButton(
+          ElevatedButton(
               onPressed: () {
                 setState(() {});
               },
@@ -43,7 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
             return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  return noteCard(snapshot.data![index]);
+                  return Dismissible(
+                      background: Container(
+                        color: Colors.red,
+                        child: Icon(Icons.delete),
+                      ),
+                      key: UniqueKey(),
+                      onDismissed: (direction) {
+                        setState(() {
+                          NotesDatabase.instance
+                              .delete(snapshot.data![index].columnId!);
+                        });
+                      },
+                      child: noteCard(snapshot.data![index]));
                 });
           } else {
             return LinearProgressIndicator();
@@ -67,17 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text(snapshot.note.toString()),
           subtitle: Text(snapshot.date.toString()),
         ),*/
-        child: Dismissible(
-          key: Key(snapshot.toString()),
-          onDismissed: (direction) {
-            setState(() {
-              NotesDatabase.instance.delete(snapshot.columnId);
-            });
-          },
-          child: ListTile(
-            title: Text(snapshot.note.toString()),
-            subtitle: Text(snapshot.date.toString()),
-          ),
+        child: ListTile(
+          title: Text(snapshot.note.toString()),
+          subtitle: Text(snapshot.date.toString()),
         ),
       ),
     );
